@@ -175,7 +175,8 @@ const ActiveJourney = () => {
   };
 
   const copyShareLink = () => {
-    const url = `${window.location.origin}/live/${trackingCode}`;
+    const baseOrigin = import.meta.env.VITE_SHARE_URL || window.location.origin;
+    const url = `${baseOrigin}/live/${trackingCode}`;
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(url)
         .then(() => setCopied(true))

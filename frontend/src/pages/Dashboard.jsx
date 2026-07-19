@@ -260,7 +260,8 @@ const Dashboard = () => {
   };
 
   const copyToClipboard = (code) => {
-    const shareUrl = `${window.location.origin}/live/${code}`;
+    const baseOrigin = import.meta.env.VITE_SHARE_URL || window.location.origin;
+    const shareUrl = `${baseOrigin}/live/${code}`;
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(shareUrl)
         .then(() => setCopiedCode(code))
