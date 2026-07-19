@@ -7,12 +7,14 @@ export const useWebSocket = (trackingCode, onMessageReceived) => {
   useEffect(() => {
     if (!trackingCode) return;
 
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'localhost:8080'
-      : `${window.location.hostname}:8080`;
-    
-    const brokerURL = `${wsProtocol}//${wsHost}/ws`;
+    // Define WebSocket broker URL dynamically (checks for environment variable first)
+    const brokerURL = import.meta.env.VITE_WS_URL || (() => {
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'localhost:8080'
+        : `${window.location.hostname}:8080`;
+      return `${wsProtocol}//${wsHost}/ws`;
+    })();
 
     const client = new Client({
       brokerURL: brokerURL,
