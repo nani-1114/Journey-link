@@ -1,0 +1,18 @@
+# Node modules
+node_modules/
+dist/
+.env
+
+# Maven builds and files
+target/
+*.class
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.log
+
+# Windows thumbnail caches
+Thumbs.db

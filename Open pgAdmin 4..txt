@@ -1,0 +1,9 @@
+Open pgAdmin 4.
+
+Name: JourneyLink Cloud RDS (This is just a display label)
+In the Connection tab, copy and paste the following parameters exactly:
+Host name/address: journeylink-db.crcawkq2aeeg.ap-south-1.rds.amazonaws.com
+Port: 5432
+Maintenance database: postgres
+Username: journeylink
+Password: journeylink123
