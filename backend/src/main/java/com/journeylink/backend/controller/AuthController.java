@@ -1,9 +1,6 @@
 package com.journeylink.backend.controller;
 
-import com.journeylink.backend.dto.JwtAuthenticationResponse;
-import com.journeylink.backend.dto.LoginRequest;
-import com.journeylink.backend.dto.RegisterRequest;
-import com.journeylink.backend.dto.UserResponse;
+import com.journeylink.backend.dto.*;
 import com.journeylink.backend.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -35,5 +32,17 @@ public class AuthController {
     public ResponseEntity<UserResponse> getUserProfile() {
         UserResponse profile = authService.getCurrentUserProfile();
         return ResponseEntity.ok(profile);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.initiatePasswordReset(request);
+        return ResponseEntity.ok("Verification code sent successfully. Check console logs.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok("Password reset successfully");
     }
 }

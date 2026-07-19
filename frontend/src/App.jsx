@@ -10,6 +10,7 @@ import ActiveJourney from './pages/ActiveJourney';
 import LiveTracking from './pages/LiveTracking';
 import History from './pages/History';
 import Analytics from './pages/Analytics';
+import ForgotPassword from './pages/ForgotPassword';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
               {/* Public Authentication Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
 
               {/* Public Live Journey Tracking Link */}
               <Route path="/live/:trackingCode" element={<LiveTracking />} />

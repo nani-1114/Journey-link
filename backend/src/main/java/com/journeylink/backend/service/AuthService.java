@@ -1,9 +1,6 @@
 package com.journeylink.backend.service;
 
-import com.journeylink.backend.dto.JwtAuthenticationResponse;
-import com.journeylink.backend.dto.LoginRequest;
-import com.journeylink.backend.dto.RegisterRequest;
-import com.journeylink.backend.dto.UserResponse;
+import com.journeylink.backend.dto.*;
 import com.journeylink.backend.model.User;
 import com.journeylink.backend.repository.UserRepository;
 import com.journeylink.backend.security.JwtTokenProvider;
@@ -15,6 +12,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Random;
 
 @Service
 public class AuthService {
@@ -97,5 +97,50 @@ public class AuthService {
         String email = authentication.getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+    }
+
+    @Transactional
+    public void initiatePasswordReset(ForgotPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User with this email does not exist"));
+
+        // Generate a 6-digit verification code
+        Random random = new Random();
+        int code = 100000 + random.nextInt(900000);
+        String resetToken = String.valueOf(code);
+
+        user.setResetToken(resetToken);
+        user.setResetTokenExpiry(LocalDateTime.now().plusMinutes(15));
+        userRepository.save(user);
+
+        // In a real production app we would send an email here.
+        // For debugging/demo, we print the code clearly in the server console logs
+        System.out.println("\n=============================================");
+        System.out.println("=== PASSWORD RESET TOKEN FOR " + request.getEmail() + " ===");
+        System.out.println("=== TOKEN CODE: " + resetToken + " ===");
+        System.out.println("=== EXPIRES IN: 15 MINUTES ===");
+        System.out.println("=============================================\n");
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User with this email does not exist"));
+
+        if (user.getResetToken() == null || !user.getResetToken().equals(request.getToken())) {
+            throw new IllegalArgumentException("Invalid reset token");
+        }
+
+        if (user.getResetTokenExpiry() == null || user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Reset token has expired");
+        }
+
+        // Encrypt and set new password
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        
+        // Clear token
+        user.setResetToken(null);
+        user.setResetTokenExpiry(null);
+        userRepository.save(user);
     }
 }
